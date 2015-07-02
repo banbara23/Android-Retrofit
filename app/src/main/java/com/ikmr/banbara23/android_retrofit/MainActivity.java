@@ -2,8 +2,12 @@ package com.ikmr.banbara23.android_retrofit;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -12,6 +16,27 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // デフォルトのアダプター(converter)はjson用
+        // json以外の形式をサポートするには別途converterの実装が必要
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint("http://www.test.jp")
+                .build();
+        RetroFitApi service = restAdapter.create(RetroFitApi.class);
+
+        service.getNew("hoge", new RequestCallback<ArticleList>(new ArticleListener()));
+    }
+
+    // コールバックリスナーの定義
+    public class ArticleListener implements RequestListener<ArticleList>, com.ikmr.banbara23.android_retrofit.ArticleListener {
+        @Override
+        public void onSuccess(ArticleList response) {
+            Log.d("rest", "onSuccess!!!");
+        }
+
+        @Override
+        public void onFailure(RetrofitError error) {
+            Log.d("rest", "onFailure!!!");
+        }
     }
 
     @Override
