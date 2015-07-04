@@ -1,4 +1,4 @@
-package com.ikmr.banbara23.android_retrofit;
+package com.ikmr.banbara23.android_retrofit.Listener;
 
 import retrofit.RetrofitError;
 
@@ -7,5 +7,6 @@ import retrofit.RetrofitError;
  */
 public interface RequestListener<T> {
     void onSuccess(T response);
+
     void onFailure(RetrofitError error);
 }

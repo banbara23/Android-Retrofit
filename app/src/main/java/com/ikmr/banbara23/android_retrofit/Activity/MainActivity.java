@@ -1,36 +1,56 @@
-package com.ikmr.banbara23.android_retrofit;
+package com.ikmr.banbara23.android_retrofit.Activity;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.ikmr.banbara23.android_retrofit.Api.RetroFitApi;
+import com.ikmr.banbara23.android_retrofit.Callback.RequestCallback;
+import com.ikmr.banbara23.android_retrofit.Entity.largeArea.LargeArea;
+import com.ikmr.banbara23.android_retrofit.Listener.RequestListener;
+import com.ikmr.banbara23.android_retrofit.R;
+
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
+import retrofit.converter.GsonConverter;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
+
+    //http://webservice.recruit.co.jp/hotpepper/large_area/v1/?key=86b2c7035911964c&format=json
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Gson gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create();
+
         // デフォルトのアダプター(converter)はjson用
         // json以外の形式をサポートするには別途converterの実装が必要
         RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://www.test.jp")
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setEndpoint("http://webservice.recruit.co.jp")
+                .setConverter(new GsonConverter(gson))
                 .build();
         RetroFitApi service = restAdapter.create(RetroFitApi.class);
 
-        service.getNew("hoge", new RequestCallback<ArticleList>(new ArticleListener()));
+        service.getLargeArea(new RequestCallback<>(new LargeAreaResponseListener()));
     }
 
     // コールバックリスナーの定義
-    public class ArticleListener implements RequestListener<ArticleList>, com.ikmr.banbara23.android_retrofit.ArticleListener {
+    public class LargeAreaResponseListener implements RequestListener<LargeArea>, com.ikmr.banbara23.android_retrofit.Listener.ResponseListener {
         @Override
-        public void onSuccess(ArticleList response) {
-            Log.d("rest", "onSuccess!!!");
+        public void onSuccess(LargeArea response) {
+            Log.d("onSuccess", "onSuccess!!!");
+            Log.d("onSuccess", response.toString());
         }
 
         @Override
